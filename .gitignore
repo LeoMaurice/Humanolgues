@@ -1,18 +1,9 @@
 # A décocher sur le projet réelle
-# data/intermediate/big/
-# data/external/big/
-# data/processed/big
-# data/raw/big
-# src/models/LLM/big
-# src/models/econometrics/big
-# src/models/ML/big
-# src/models/stats/big
-# src/package
-# temp
-# release
-
-# mkdocs documentation
-# /site
+data/intermediate/big/
+data/processed/big
+data/raw/big
+src/models/LLM/big
+temp
 
 # History files
 .Rhistory
