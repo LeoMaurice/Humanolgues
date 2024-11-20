@@ -1,0 +1,43 @@
+# Analyse de données et manipulation
+pandas==1.4.3
+numpy==1.23.1
+scipy==1.8.1
+
+# Machine Learning
+scikit-learn==1.1.1
+
+# Deep Learning
+tensorflow==2.9.1
+keras==2.9.0
+torch==1.12.0
+torchvision==0.13.0
+
+# Traitement du Langage Naturel (NLP)
+nltk==3.7
+spacy==3.4.0
+transformers==4.20.1
+
+# Vision par Ordinateur
+opencv-python==4.6.0.66
+Pillow==9.2.0
+
+# Visualisation
+matplotlib==3.5.2
+seaborn==0.11.2
+plotly==5.9.0
+
+# Autres utilitaires
+requests==2.28.1
+beautifulsoup4==4.11.1
+scikit-image==0.19.3
+pytorch-lightning==1.6.5
+tqdm==4.64.0
+
+# Sauvegarde et chargement des modèles
+joblib==1.1.0
+
+# Manipulation de fichiers
+h5py==3.7.0
+
+# Sérialisation
+pickle5==0.0.12

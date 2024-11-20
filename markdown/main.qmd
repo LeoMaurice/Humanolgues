@@ -1,0 +1,13 @@
+---
+title: "Main Notebook"
+author: "Author Name"
+date: "2024-07-17"
+format: html
+jupyter: python3
+---
+
+# Initialiser le projet
+
+``` r
+source("../src/config/init.R")
+```
