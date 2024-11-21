@@ -51,7 +51,9 @@ pacman::p_load(
   # PCA
   FactoMineR,
   factoextra,
-  Factoshiny
+  Factoshiny,
+  robustbase,
+  rrcov
   
 )
 

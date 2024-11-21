@@ -24,9 +24,12 @@ normalize_frequencies <- function(df_wide) {
 }
 
 # Étape 3 : Réalisation de la PCA
-perform_pca <- function(df_wide) {
+perform_pca <- function(df_wide, robust = F) {
   # Exclure la colonne "document" pour la PCA
-  pca_res <- PCA(df_wide%>%select(starts_with("freq_")), graph = FALSE)
+  if(robust)
+    pca_res <- PcaHubert(df_wide%>%select(starts_with("freq_")), k = 5)
+  else
+    pca_res <- PCA(df_wide%>%select(starts_with("freq_")), graph = FALSE)
   return(pca_res)
 }
 

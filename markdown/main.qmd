@@ -12,12 +12,19 @@ jupyter: python3
 source("./src/config/init.R")
 ```
 ```{r}
+
+# remove_auteur_particulier = c("Méda","Heyer","CantoSperber","Illouz","Ccne","Morin")
+remove_auteur_particulier = c()
+
 humanologues_base <- read_pdfs_from_folder("./data/raw/textes")%>%
   mutate(Nom = str_extract(file_name, "^[^_]+"),
          Source = str_extract(file_name, "(?<=_)[^_]+(?=_)"),
-         Date = as.Date(str_extract(file_name, "\\d{8}(?=\\.pdf)"), format = "%Y%m%d"))
+         Date = as.Date(str_extract(file_name, "\\d{8}(?=\\.pdf)"), format = "%Y%m%d"))%>%
+  filter(!Nom%in%remove_auteur_particulier)
+
 toremove_didier_boltanski <- readxl::read_xlsx("./data/intermediate/frequence_mots_retenus.xlsx")%>%
   filter(ejected == "&")%>%pull(feature)
+
 dfm_humanologues <- compute_dfm_lemmatized(humanologues_base, recompute = T,
                                            additional_remove = toremove_didier_boltanski, lower_count = 0)
 
@@ -38,11 +45,11 @@ dfm_humanologues%>%
 base_word_humanologues <- tidy_dfm_with_docvars(dfm_humanologues)
 ```
 ```{r}
-pca_res_humanologues <- perform_pca_pipeline(base_word_humanologues)
+pca_res_humanologues <- perform_pca_pipeline(base_word_humanologues, robust = T)
 ```
 
 ```{r}
-plots <- pca_visualization(pca_res_humanologues, humanologues_base%>%select(Nom, doc_id)%>%rename(document = doc_id))
+plots <- pca_visualization(pca_res_humanologues, humanologues_base%>%select(Nom, doc_id)%>%rename(document = doc_id), log = F)
 ```
 # Plots
 
@@ -109,8 +116,6 @@ ggsave(
 )
 ```
 ```{r}
-correlation_dimension <- as.data.frame(pca_res_humanologues$var$coord)
-correlation_dimension$word <- rownames(as.data.frame(pca_res_humanologues$var$coord))
-writexl::write_xlsx(correlation_dimension,"temp/contribution.xlsx")
+writexl::write_xlsx(get_contributions(pca_res_humanologues),"temp/contribution.xlsx")
 ```
 
