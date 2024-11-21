@@ -8,6 +8,109 @@ jupyter: python3
 
 # Initialiser le projet
 
-``` r
-source("../src/config/init.R")
+```{r}
+source("./src/config/init.R")
 ```
+```{r}
+humanologues_base <- read_pdfs_from_folder("./data/raw/textes")%>%
+  mutate(Nom = str_extract(file_name, "^[^_]+"),
+         Source = str_extract(file_name, "(?<=_)[^_]+(?=_)"),
+         Date = as.Date(str_extract(file_name, "\\d{8}(?=\\.pdf)"), format = "%Y%m%d"))
+toremove_didier_boltanski <- readxl::read_xlsx("./data/intermediate/frequence_mots_retenus.xlsx")%>%
+  filter(ejected == "&")%>%pull(feature)
+dfm_humanologues <- compute_dfm_lemmatized(humanologues_base, recompute = T,
+                                           additional_remove = toremove_didier_boltanski, lower_count = 20)
+
+
+```
+```{r}
+dfm_humanologues%>%textstat_frequency()%>%
+  write_xlsx("./data/intermediate/big/frequence_mots.xlsx")
+
+```
+```{r}
+dfm_humanologues%>%
+  dfm_trim(min_termfreq = 20)%>%
+  textplot_wordcloud()
+```
+
+```{r}
+base_word_humanologues <- tidy_dfm_with_docvars(dfm_humanologues)
+```
+```{r}
+pca_res_humanologues <- perform_pca_pipeline(base_word_humanologues)
+```
+
+```{r}
+plots <- pca_visualization(pca_res_humanologues, humanologues_base%>%select(Nom, doc_id)%>%rename(document = doc_id))
+```
+# Plots
+
+## PC1 PC2
+```{r}
+plots$proj_1_2
+
+ggsave(
+  filename = "docs/espace_dim1_dim2.png",   # Nom du fichier
+  width = 16,                        # Largeur en unités spécifiées
+  height = 9,                        # Hauteur en unités spécifiées
+  units = "in",                      # Unités : pouces ("in"), cm, ou mm
+  dpi = 300                          # Résolution
+)
+```
+
+## PC1 PC3
+```{r}
+plots$proj_1_3
+ggsave(
+  filename = "docs/espace_dim1_dim3.png",   # Nom du fichier
+  width = 16,                        # Largeur en unités spécifiées
+  height = 9,                        # Hauteur en unités spécifiées
+  units = "in",                      # Unités : pouces ("in"), cm, ou mm
+  dpi = 300                          # Résolution
+)
+```
+
+## PC2 PC3
+```{r}
+plots$proj_2_3
+ggsave(
+  filename = "docs/espace_dim2_dim3.png",   # Nom du fichier
+  width = 16,                        # Largeur en unités spécifiées
+  height = 9,                        # Hauteur en unités spécifiées
+  units = "in",                      # Unités : pouces ("in"), cm, ou mm
+  dpi = 300                          # Résolution
+)
+```
+
+## Variance expliquée
+```{r}
+plots$variance
+
+ggsave(
+  filename = "docs/variance_expliquee.png",   # Nom du fichier
+  width = 16,                        # Largeur en unités spécifiées
+  height = 9,                        # Hauteur en unités spécifiées
+  units = "in",                      # Unités : pouces ("in"), cm, ou mm
+  dpi = 300                          # Résolution
+)
+```
+
+## Top var contributrice
+```{r}
+plots$top_vars_dim1
+
+ggsave(
+  filename = "docs/contributions_dim1.png",   # Nom du fichier
+  width = 16,                        # Largeur en unités spécifiées
+  height = 9,                        # Hauteur en unités spécifiées
+  units = "in",                      # Unités : pouces ("in"), cm, ou mm
+  dpi = 300                          # Résolution
+)
+```
+```{r}
+correlation_dimension <- as.data.frame(pca_res_humanologues$var$coord)
+correlation_dimension$word <- rownames(as.data.frame(pca_res_humanologues$var$coord))
+writexl::write_xlsx(correlation_dimension,"docs/contribution.xlsx")
+```
+

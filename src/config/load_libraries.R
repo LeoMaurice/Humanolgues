@@ -3,15 +3,12 @@ require(pacman, quietly = T)
 
 # Chargement des packages avec pacman
 pacman::p_load(
-  # Gestion des fichiers et des formats de données
-  arrow,
-  openxlsx,
-  
   # Manipulation et transformation des données
   tidyverse,
   reshape2,
   stringr,
   DT,
+  dtplyr,
   
   # Statistiques
   stats,
@@ -28,11 +25,6 @@ pacman::p_load(
   paletteer,
   patchwork,
   
-  # Graphes et réseaux
-  igraph,
-  tidygraph,
-  #visNetwork,
-  
   # Production de rapports et documents
   rmarkdown,
   knitr,
@@ -42,8 +34,29 @@ pacman::p_load(
   lubridate, # Gestion des dates
   janitor,   # Nettoyage des données
   here,      # Gestion des chemins de fichiers
-  magrittr   # Pour l'opérateur pipe %>%
+  magrittr,   # Pour l'opérateur pipe %>%
+  readxl,
+  writexl,
+  qs,
+  reticulate,
+
+  # NLP
+  quanteda,
+  quanteda.textstats,
+  quanteda.textplots,
+  spacyr,
+  pdftools,
+  tidytext,
+  
+  # PCA
+  FactoMineR,
+  factoextra,
+  Factoshiny
+  
 )
+
+# spacy_install() to execute only the first time
+# spacy_download_langmodel(lang_models = 'fr_core_news_sm')
 
 # Messages de confirmation
 cat("Toutes les bibliothèques ont été chargées avec succès.")
