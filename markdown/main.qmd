@@ -10,6 +10,7 @@ jupyter: python3
 
 ```{r}
 source("./src/config/init.R")
+recompute = T
 ```
 ```{r}
 
@@ -25,8 +26,9 @@ humanologues_base <- read_pdfs_from_folder("./data/raw/textes")%>%
 toremove_didier_boltanski <- readxl::read_xlsx("./data/intermediate/frequence_mots_retenus.xlsx")%>%
   filter(ejected == "&")%>%pull(feature)
 
-dfm_humanologues <- compute_dfm_lemmatized(humanologues_base, recompute = T,
-                                           additional_remove = toremove_didier_boltanski, lower_count = 0)
+dfm_humanologues <- compute_dfm_lemmatized(humanologues_base, recompute = recompute,
+                                           additional_remove = toremove_didier_boltanski,
+                                           lower_count = 15)
 
 
 ```
@@ -49,7 +51,7 @@ pca_res_humanologues <- perform_pca_pipeline(base_word_humanologues, robust = T)
 ```
 
 ```{r}
-plots <- pca_visualization(pca_res_humanologues, humanologues_base%>%select(Nom, doc_id)%>%rename(document = doc_id), log = F)
+plots <- pca_visualization(pca_res_humanologues, humanologues_base%>%select(Nom, doc_id)%>%rename(document = doc_id))
 ```
 # Plots
 
@@ -115,6 +117,30 @@ ggsave(
   dpi = 300                          # Résolution
 )
 ```
+```{r}
+plots$top_vars_dim2
+
+ggsave(
+  filename = "temp/contributions_dim2.png",   # Nom du fichier
+  width = 16,                        # Largeur en unités spécifiées
+  height = 9,                        # Hauteur en unités spécifiées
+  units = "in",                      # Unités : pouces ("in"), cm, ou mm
+  dpi = 300                          # Résolution
+)
+```
+
+```{r}
+plots$top_vars_dim3
+
+ggsave(
+  filename = "temp/contributions_dim3.png",   # Nom du fichier
+  width = 16,                        # Largeur en unités spécifiées
+  height = 9,                        # Hauteur en unités spécifiées
+  units = "in",                      # Unités : pouces ("in"), cm, ou mm
+  dpi = 300                          # Résolution
+)
+```
+
 ```{r}
 writexl::write_xlsx(get_contributions(pca_res_humanologues),"temp/contribution.xlsx")
 ```

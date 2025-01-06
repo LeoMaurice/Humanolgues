@@ -19,7 +19,7 @@ perform_pca_pipeline <- function(df, df_normalized = data.frame(), robust = F) {
   if(is_empty(df_normalized)){
     df_normalized <- prepepare_pca_data(df)
   }
-  
+
   # Étape 3 : PCA
   pca_res <- perform_pca(df_normalized, robust = robust)
   

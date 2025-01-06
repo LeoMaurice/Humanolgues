@@ -15,14 +15,14 @@ pacman::p_load(
   rstatix,
   
   # Visualisation de données
-  ggplot2,
-  gridExtra,
-  ggprism,
+  ggplot2, 
+  gridExtra,# asbent portail
+  ggprism,# asbent portail
   ggpubr,
-  ggcorrplot,
-  ggraph,
+  ggcorrplot,# asbent portail
+  ggraph,# asbent portail
   ggrepel,
-  paletteer,
+  paletteer,# asbent portail
   patchwork,
   
   # Production de rapports et documents
@@ -32,32 +32,32 @@ pacman::p_load(
   
   # Autres utilitaires
   lubridate, # Gestion des dates
-  janitor,   # Nettoyage des données
+  janitor,   # Nettoyage des données # asbent portail
   here,      # Gestion des chemins de fichiers
   magrittr,   # Pour l'opérateur pipe %>%
   readxl,
   writexl,
-  qs,
+  qs, # asbent portail
   reticulate,
 
   # NLP
-  quanteda,
-  quanteda.textstats,
-  quanteda.textplots,
-  spacyr,
-  pdftools,
-  tidytext,
+  quanteda, # asbent portail
+  quanteda.textstats, # asbent portail
+  quanteda.textplots,# asbent portail
+  spacyr,# asbent portail
+  pdftools,# asbent portail
+  tidytext, # installé, non fonctionnel portail
   
   # PCA
-  FactoMineR,
-  factoextra,
-  Factoshiny,
+  FactoMineR,# asbent portail
+  factoextra,# asbent portail
+  Factoshiny,# asbent portail
   robustbase,
   rrcov
   
 )
 
-# spacy_install() to execute only the first time
+# spacy_install() # to execute only the first time
 # spacy_download_langmodel(lang_models = 'fr_core_news_sm')
 
 # Messages de confirmation

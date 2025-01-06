@@ -77,5 +77,7 @@ tidy_dfm_with_docvars <- function(dfm){
         select(document,
                Nom,Source,Date),
       by = "document"
-    )
+    )%>%
+    mutate(document = as.numeric(document))%>%
+    arrange(document)
 }

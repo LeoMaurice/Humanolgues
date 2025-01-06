@@ -17,7 +17,7 @@ is.rrcovPca <- function(pca_res){
 }
 
 # Fonction pour les sorties standard
-pca_visualization <- function(pca_res, docvars, log = FALSE) {
+pca_visualization <- function(pca_res, docmetadatas, log = FALSE) {
   
   # Helper functions to extract data based on PCA object class
   get_individual_coords <- function(pca_res) {
@@ -56,11 +56,16 @@ pca_visualization <- function(pca_res, docvars, log = FALSE) {
   }
   
   # Projection des individus sur l'espace PCA
-  proj_individuals <- function(pca_res, docvars, dims = c(1, 2)) {
+  proj_individuals <- function(pca_res, docmetadatas, dims = c(1, 2)) {
     ind_coords <- get_individual_coords(pca_res)
     ind_data <- as.data.frame(ind_coords[, dims]) %>%
-      rename_with(~ paste0("Dim", dims), everything()) %>%
-      mutate(Nom = docvars$Nom)
+      rename_with(~ paste0("Dim", dims), everything()) 
+    
+    ind_data$document <- row.names(ind_data)
+    
+    ind_data <- ind_data%>%
+      left_join(docmetadatas,
+                by = "document")
     
     x_var <- paste0("Dim", dims[1])
     y_var <- paste0("Dim", dims[2])
@@ -122,7 +127,7 @@ pca_visualization <- function(pca_res, docvars, log = FALSE) {
   }
   
   # Variables qui comptent le plus sur chaque axe
-  plot_top_variables <- function(pca_res, dim = 1, top_n = 50) {
+  plot_top_variables <- function(pca_res, dim = 1, top_n = 25) {
     var_coords <- get_variable_coords(pca_res)
     
     var_data <- as.data.frame(var_coords[, dim, drop = FALSE]) %>%
@@ -146,6 +151,27 @@ pca_visualization <- function(pca_res, docvars, log = FALSE) {
       coord_flip() +
       labs(
         title = paste("Top", top_n, "variables contributrices (Dim", dim, ")"),
+        x = "Variables",
+        y = "Contribution"
+      ) +
+      theme_pubclean()
+  }
+  
+  plot_cutoff_variables <- function(pca_res, dim = 1, cut_off = 0.1) {
+    var_coords <- get_variable_coords(pca_res)
+    
+    var_data <- as.data.frame(var_coords[, dim, drop = FALSE]) %>%
+      rename_with(~ paste0("Dim", dim), everything()) %>%
+      mutate(Variable = rownames(var_coords)) %>%
+      pivot_longer(cols = starts_with("Dim"), names_to = "Dimension", values_to = "Contribution") %>%
+      group_by(Dimension) %>%
+      filter(abs(Contribution) >= cut_off)
+    
+    ggplot(var_data, aes(x = reorder(Variable, Contribution), y = Contribution, fill = Dimension)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      coord_flip() +
+      labs(
+        title = paste("variables contributrices (Dim", dim, ") avec une contribution absolue de plus de ", cut_off),
         x = "Variables",
         y = "Contribution"
       ) +
@@ -203,14 +229,16 @@ pca_visualization <- function(pca_res, docvars, log = FALSE) {
   
   # Génération des graphiques
   plots <- list(
-    proj_1_2 = proj_individuals(pca_res, docvars, dims = c(1, 2)),
-    proj_1_3 = proj_individuals(pca_res, docvars, dims = c(1, 3)),
-    proj_2_3 = proj_individuals(pca_res, docvars, dims = c(2, 3)),
+    proj_1_2 = proj_individuals(pca_res, docmetadatas, dims = c(1, 2)),
+    proj_1_3 = proj_individuals(pca_res, docmetadatas, dims = c(1, 3)),
+    proj_2_3 = proj_individuals(pca_res, docmetadatas, dims = c(2, 3)),
     plot_circle_1_2 = plot_correlation_circle(pca_res, dims = c(1, 2)),
     plot_circle_1_3 = plot_correlation_circle(pca_res, dims = c(1, 3)),
     plot_circle_2_3 = plot_correlation_circle(pca_res, dims = c(2, 3)),
     variance = plot_variance(pca_res),
-    top_vars_dim1 = plot_top_variables(pca_res, dim = 1, top_n = 25)
+    top_vars_dim1 = plot_cutoff_variables(pca_res, dim = 1,cut_off = 0.1),
+    top_vars_dim2 = plot_cutoff_variables(pca_res, dim = 2,cut_off = 0.1),
+    top_vars_dim3 = plot_cutoff_variables(pca_res, dim = 3,cut_off = 0.1)
   )
   
   return(plots)
